@@ -31,13 +31,17 @@ exports.validate = (method) => {
 exports.signup = async (req, res) => {
   try {
     const errors = validationResult(req);
-
+    const { name, surname, email, password } = req.body;
     if (!errors.isEmpty()) {
       res.status(422).json({ errors: errors.array() });
       return;
     }
-    const { name, surname, email, password } = req.body;
-    const user = new User({ name, surname, email, password, });
+    const user = await User.findOne({ email })
+    if (user) {
+      return res.status(400).json({ errors: [{ param: 'email', msg: 'User already exists' }] })
+    }
+
+    user = new User({ name, surname, email, password, });
     //encrypt password
     const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(password, salt);
