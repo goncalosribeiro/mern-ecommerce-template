@@ -1,0 +1,26 @@
+{
+  "name": "mern-ecommerce-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goncalosribeiro/mern-ecommerce-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/goncalosribeiro/mern-ecommerce-template/issues"
+  },
+  "homepage": "https://github.com/goncalosribeiro/mern-ecommerce-template#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.8"
+  }
+}
