@@ -1,6 +1,10 @@
 const express = require('express');
 const connectDB = require('./server/database/db');
+const cookieParser = require('cookie-parser')
 require('dotenv').config();
+
+//app
+const app = express();
 
 //import routes
 const userRoutes = require('./server/routes/user')
@@ -8,8 +12,11 @@ const userRoutes = require('./server/routes/user')
 //connect to db
 connectDB()
 
-//app
-const app = express();
+//Initiate Middleware
+app.use(express.json({ extended: false }));
+app.use(cookieParser());
+// app.use(cors())
+
 
 //routes
 app.use('/api', userRoutes);
