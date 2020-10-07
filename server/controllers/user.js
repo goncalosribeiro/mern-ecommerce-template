@@ -1,6 +1,7 @@
 const User = require('../database/models/user');
 const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken')
 
 exports.validate = (method) => {
   switch (method) {
@@ -22,7 +23,12 @@ exports.validate = (method) => {
               throw new Error('Passwords must be same')
             }
           })
-
+      ]
+    };
+    case 'logUser': {
+      return [
+        check('email', 'Please include a valid email').isEmail().normalizeEmail(),
+        check('password', 'Password is required').notEmpty()
       ]
     }
   }
@@ -33,10 +39,10 @@ exports.signup = async (req, res) => {
     const errors = validationResult(req);
     const { name, surname, email, password } = req.body;
     if (!errors.isEmpty()) {
-      res.status(422).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
       return;
     }
-    const user = await User.findOne({ email })
+    let user = await User.findOne({ email })
     if (user) {
       return res.status(400).json({ errors: [{ param: 'email', msg: 'User already exists' }] })
     }
@@ -56,7 +62,26 @@ exports.signup = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error when creating user')
   }
+}
 
+exports.signin = async (req, res) => {
+  try {
+    const { password, email } = req.body;
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] })
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] })
+    }
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+    res.cookie('jwt', token, { expire: new Date() + 1000 });
 
-
+    const { _id, name, surname, role } = user;
+    return res.json({ token, user: { _id, name, surname, email, role } })
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error when signing in user')
+  }
 } 
