@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 
 //import routes
-const userRoutes = require('./server/routes/user')
+const authRoutes = require('./server/routes/auth')
 
 //connect to db
 connectDB()
@@ -19,7 +19,7 @@ app.use(cookieParser());
 
 
 //routes
-app.use('/api', userRoutes);
+app.use('/api', authRoutes);
 
 const port = process.env.PORT || 8000;
 

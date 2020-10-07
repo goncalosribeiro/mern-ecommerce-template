@@ -1,38 +1,7 @@
 const User = require('../database/models/user');
 const bcrypt = require('bcryptjs');
-const { check, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
-
-exports.validate = (method) => {
-  switch (method) {
-    case 'createUser': {
-      return [
-        check('name', 'Name is required').notEmpty().escape(),
-        check('surname', 'Surname is required').notEmpty().escape(),
-        check('email', 'Please include a valid email').isEmail().normalizeEmail(),
-        check('password', 'Password is required').notEmpty(),
-        check('password', 'Please enter a password with 6 or more characters, include a number, capital letter and a symbol')
-          .isLength({ min: 6 }).withMessage('Please enter a password with 6 or more characters')
-          .matches(/\d/).withMessage('Password mast contain a number')
-          .matches(/(?=.*[a-z])(?=.*[A-Z])/).withMessage('Password must contain at least one capital letter and one lowercase letter')
-          .matches(/[^A-Za-z0-9]/).withMessage('Password must contain at least a symbol'),
-        check('passwordConfirmation')
-          .custom(async (passwordConfirmation, { req }) => {
-            const password = req.body.password;
-            if (password !== passwordConfirmation) {
-              throw new Error('Passwords must be same')
-            }
-          })
-      ]
-    };
-    case 'logUser': {
-      return [
-        check('email', 'Please include a valid email').isEmail().normalizeEmail(),
-        check('password', 'Password is required').notEmpty()
-      ]
-    }
-  }
-}
 
 exports.signup = async (req, res) => {
   try {
@@ -48,7 +17,6 @@ exports.signup = async (req, res) => {
     }
 
     user = new User({ name, surname, email, password, });
-    //encrypt password
     const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(password, salt);
 
@@ -76,7 +44,7 @@ exports.signin = async (req, res) => {
       return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] })
     }
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-    res.cookie('jwt', token, { expire: new Date() + 1000 });
+    res.cookie('jwt', token, { maxAge: 2 * 60 * 60 * 1000, httpOnly: true });
 
     const { _id, name, surname, role } = user;
     return res.json({ token, user: { _id, name, surname, email, role } })
@@ -84,4 +52,27 @@ exports.signin = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error when signing in user')
   }
-} 
+}
+
+exports.signout = (req, res) => {
+  res.clearCookie('jwt');
+  res.json({ msg: 'Signed out successfully' })
+}
+
+// exports.requireSignin = expressJwt({
+//   secret: process.env.JWT_SECRET,
+//   algorithms: ['HS256'],
+//   userProperty: 'auth'
+// });
+
+exports.requireSignin = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) return res.status(401).json({ msg: 'Please SignIn' })
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ msg: 'Session no longer valid' })
+    req.user = user;
+    next();
+  })
+}
+
+
