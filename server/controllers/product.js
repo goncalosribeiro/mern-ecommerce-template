@@ -10,7 +10,6 @@ exports.productById = async (req, res, next, id) => {
       return res.status(400).json({ errors: [{ msg: 'Product not found' }] })
     }
     req.product = product;
-    console.log(req.product);
     next();
   } catch (err) {
     console.error(err.message);
