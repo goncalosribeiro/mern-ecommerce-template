@@ -27,6 +27,19 @@ exports.validate = (method) => {
         check('email', 'Please include a valid email').isEmail().normalizeEmail(),
         check('password', 'Password is required').notEmpty()
       ]
-    }
+    };
+    case 'createCategory': {
+      return [
+        check('name', 'Category name is required').notEmpty().escape()
+      ]
+    };
+    case 'createProduct': {
+      return [
+        check('name', 'Product name is required').notEmpty().escape(),
+        check('description', 'Product description is required').notEmpty().escape(),
+        check('price', 'Insert a valid price').notEmpty().isNumeric(),
+        check('quantity', 'Insert a valid quantity').isNumeric()
+      ]
+    };
   }
 }

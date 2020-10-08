@@ -8,8 +8,4 @@ router.post('/signup', validate('createUser'), signup)
 router.post('/signin', validate('logUser'), signin)
 router.get('/signout', signout)
 
-router.get('/hi', requireSignin, (req, res) => {
-  res.send('hello')
-})
-
 module.exports = router;

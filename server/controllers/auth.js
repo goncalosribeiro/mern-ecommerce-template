@@ -2,7 +2,6 @@ const User = require('../database/models/user');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
-const expressJwt = require('express-jwt')
 
 exports.signup = async (req, res) => {
   try {
@@ -74,7 +73,6 @@ exports.requireSignin = (req, res, next) => {
 //Access to user exclusive pages
 exports.isAuth = (req, res, next) => {
   let user = req.profile && req.auth && req.profile._id == req.auth._id
-  console.log('user', user);
   if (!user) {
     return res.status(403).json({ error: 'Access denied' })
   }

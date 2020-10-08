@@ -2,17 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const { requireSignin, isAuth, isAdmin } = require('../controllers/auth');
+const { create } = require('../controllers/product');
 const { userById } = require('../controllers/user');
+const { validate } = require('../validators/validators');
 
-//test route
-router.get('/hi/:userId', requireSignin, isAuth, isAdmin, (req, res) => {
-  console.log('req.auth', req.auth);
-  console.log('req.user', req.user);
-  console.log('req.profile', req.profile);
-  res.json({
-    user: req.profile
-  })
-})
+router.post('/product/create/:userId', requireSignin, isAuth, isAdmin, validate('createProduct'), create)
 
 router.param('userId', userById)
 
