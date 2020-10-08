@@ -8,6 +8,7 @@ const app = express();
 
 //import routes
 const authRoutes = require('./server/routes/auth')
+const userRoutes = require('./server/routes/user')
 
 //connect to db
 connectDB()
@@ -20,6 +21,7 @@ app.use(cookieParser());
 
 //routes
 app.use('/api', authRoutes);
+app.use('/api', userRoutes);
 
 const port = process.env.PORT || 8000;
 

@@ -2,6 +2,7 @@ const User = require('../database/models/user');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
+const expressJwt = require('express-jwt')
 
 exports.signup = async (req, res) => {
   try {
@@ -59,20 +60,32 @@ exports.signout = (req, res) => {
   res.json({ msg: 'Signed out successfully' })
 }
 
-// exports.requireSignin = expressJwt({
-//   secret: process.env.JWT_SECRET,
-//   algorithms: ['HS256'],
-//   userProperty: 'auth'
-// });
-
+//Access to any register user exclusive pages
 exports.requireSignin = (req, res, next) => {
   const token = req.cookies.jwt;
-  if (!token) return res.status(401).json({ msg: 'Please SignIn' })
+  if (!token) return res.status(401).json({ error: 'Please SignIn' })
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ msg: 'Session no longer valid' })
-    req.user = user;
+    if (err) return res.status(403).json({ error: 'Session no longer valid' })
+    req.auth = user;
     next();
   })
 }
 
+//Access to user exclusive pages
+exports.isAuth = (req, res, next) => {
+  let user = req.profile && req.auth && req.profile._id == req.auth._id
+  console.log('user', user);
+  if (!user) {
+    return res.status(403).json({ error: 'Access denied' })
+  }
+  next();
+}
+
+//Access to admin exclusive pages
+exports.isAdmin = (req, res, next) => {
+  if (req.profile.role === 0) {
+    return res.status(403).json({ error: 'Access denied. Admin credentials necessary' })
+  }
+  next();
+}
 
