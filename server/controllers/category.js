@@ -1,6 +1,6 @@
 const Category = require('../database/models/category');
 
-exports.categoryById = (req, res, next, id) => {
+exports.categoryById = async (req, res, next, id) => {
   try {
     const category = await Category.findById(id)
     if (!category) {
