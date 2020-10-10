@@ -1,6 +1,7 @@
 const express = require('express');
 const connectDB = require('./server/database/db');
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
 require('dotenv').config();
 
 //app
@@ -18,6 +19,7 @@ connectDB()
 //Initiate Middleware
 app.use(express.json({ extended: false }));
 app.use(cookieParser());
+app.use(cors())
 // app.use(cors())
 
 
