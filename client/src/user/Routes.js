@@ -4,7 +4,6 @@ import Home from '../core/Home'
 import Signin from './Signin'
 import Signup from './Signup'
 
-
 const Routes = () => {
   return (
     <Router>

@@ -1,0 +1,9 @@
+.nav .nav-item .nav-link {
+  color: #ffff;
+}
+
+.nav-item .nav-link.active {
+  color: #ff9900;
+  background-color: transparent;
+  border: transparent;
+}
