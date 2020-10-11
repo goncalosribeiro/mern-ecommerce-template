@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Layout from '../core/Layout'
 import Form from '../components/Form'
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const Signup = () => {
   const [values, setValues] = useState({
@@ -53,7 +54,7 @@ const Signup = () => {
   const showSuccess = () => (
     <div className="alert alert-info"
       style={{ display: success ? '' : 'none' }}>
-      New account created. Please sign in.
+      New account created. Please sign in. <Link to='/signin'>Sign In</Link>
     </div>
   )
 

@@ -34,6 +34,11 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
     const { password, email } = req.body;
     const user = await User.findOne({ email })
     if (!user) {
