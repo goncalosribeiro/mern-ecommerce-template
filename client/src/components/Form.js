@@ -1,13 +1,13 @@
 import React from 'react'
+import './Form.css'
 
 const Form = ({ name, lable, type, onChange, value, error }) => {
-
 
   const errorHandle = name => {
     return (
       error.map((err, i) => {
         if (err.param === name) {
-          return <li className='alert alert-danger' key={i}>{err.msg}</li>
+          return <li className='alert_custom' key={i}>{err.msg}</li>
         }
       })
     )
@@ -19,12 +19,12 @@ const Form = ({ name, lable, type, onChange, value, error }) => {
       <input
         name={name}
         type={type}
-        id={name}
         className='form-control'
         value={value}
         onChange={onChange}>
       </input>
-      {errorHandle(name)}
+      {error && error.some(e => e.param === name) ? <div className="alert alert-danger">{errorHandle(name)}</div> : ''}
+
     </div>
   )
 }

@@ -13,6 +13,7 @@ exports.validate = (method) => {
           .matches(/\d/).withMessage('Password mast contain a number')
           .matches(/(?=.*[a-z])(?=.*[A-Z])/).withMessage('Password must contain at least one capital letter and one lowercase letter')
           .matches(/[^A-Za-z0-9]/).withMessage('Password must contain at least a symbol'),
+        check('passwordConfirmation', 'Confirm the password').notEmpty(),
         check('passwordConfirmation')
           .custom(async (passwordConfirmation, { req }) => {
             const password = req.body.password;

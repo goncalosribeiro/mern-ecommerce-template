@@ -14,37 +14,53 @@ const Signup = () => {
     success: false
   })
 
-  const { name, surname, email, password, passwordConfirmation, errors } = values;
+  const { name, surname, email, password, passwordConfirmation, errors, success } = values;
 
   const onChangeHandle = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value })
   }
 
   const clickSubmit = async (e) => {
-    console.log(errors);
     e.preventDefault();
     const newUser = { name, surname, email, password, passwordConfirmation }
-    console.log(newUser);
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}/signup`,
         (newUser),
         { headers: { 'Content-Type': 'application/json' } }
       )
-      console.log(res);
-    } catch (err) {
-      console.log(err.response.data.errors);
       setValues({
         ...values,
-        errors: err.response.data.errors
+        name: '',
+        surname: '',
+        email: '',
+        password: '',
+        passwordConfirmation: '',
+        errors: [],
+        success: true
+      }
+      )
+
+    } catch (err) {
+      setValues({
+        ...values,
+        errors: err.response.data.errors,
+        success: false
       }
       );
     }
-    console.log(errors);
   }
+
+  const showSuccess = () => (
+    <div className="alert alert-info"
+      style={{ display: success ? '' : 'none' }}>
+      New account created. Please sign in.
+    </div>
+  )
 
   return (
     <Layout title='Sign Up' description='Create your account' className='container col-md-8'>
       <form>
+        {showSuccess()}
         <Form name={'name'} lable={'Name'} type={'text'} onChange={onChangeHandle} error={errors} value={name} />
         <Form name={'surname'} lable={'Surname'} type={'text'} onChange={onChangeHandle} error={errors} value={surname} />
         <Form name={'email'} lable={'Email'} type={'email'} onChange={onChangeHandle} error={errors} value={email} />
