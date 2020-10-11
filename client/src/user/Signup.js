@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Layout from '../core/Layout'
+import Form from '../components/Form'
 import axios from 'axios'
 
 const Signup = () => {
@@ -9,60 +10,49 @@ const Signup = () => {
     email: '',
     password: '',
     passwordConfirmation: '',
-    error: [],
+    errors: [],
     success: false
   })
 
-  const { name, surname, email, password, passwordConfirmation } = values;
+  const { name, surname, email, password, passwordConfirmation, errors } = values;
 
   const onChangeHandle = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value })
   }
 
-  const clickSubmit = (e) => {
+  const clickSubmit = async (e) => {
+    console.log(errors);
     e.preventDefault();
     const newUser = { name, surname, email, password, passwordConfirmation }
-    fetch(`${process.env.REACT_APP_API_URL}/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(newUser)
-    })
-      .then(res => {
-        return res.json()
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    console.log(newUser);
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/signup`,
+        (newUser),
+        { headers: { 'Content-Type': 'application/json' } }
+      )
+      console.log(res);
+    } catch (err) {
+      console.log(err.response.data.errors);
+      setValues({
+        ...values,
+        errors: err.response.data.errors
+      }
+      );
+    }
+    console.log(errors);
   }
 
   return (
     <Layout title='Sign Up' description='Create your account' className='container col-md-8'>
       <form>
-        <div className="form-group">
-          <label className="text-muted">Name</label>
-          <input type="text" name="name" id="name" value={name} className='form-control' onChange={onChangeHandle} />
-        </div>
-        <div className="form-group">
-          <label className="text-muted">Surname</label>
-          <input type="text" name="surname" id="surname" value={surname} className='form-control' onChange={onChangeHandle} />
-        </div>
-        <div className="form-group">
-          <label className="text-muted">Email</label>
-          <input type="email" name="email" id="email" value={email} className='form-control' onChange={onChangeHandle} />
-        </div>
-        <div className="form-group">
-          <label className="text-muted">Password</label>
-          <input type='password' name="password" id="password" value={password} className='form-control' onChange={onChangeHandle} />
-        </div>
-        <div className="form-group">
-          <label className="text-muted">Confirm Password</label>
-          <input type="password" name="passwordConfirmation" id="passwordConfirmation" value={passwordConfirmation} className='form-control' onChange={onChangeHandle} />
-        </div>
+        <Form name={'name'} lable={'Name'} type={'text'} onChange={onChangeHandle} error={errors} value={name} />
+        <Form name={'surname'} lable={'Surname'} type={'text'} onChange={onChangeHandle} error={errors} value={surname} />
+        <Form name={'email'} lable={'Email'} type={'email'} onChange={onChangeHandle} error={errors} value={email} />
+        <Form name={'password'} lable={'Password'} type={'password'} onChange={onChangeHandle} error={errors} value={password} />
+        <Form name={'passwordConfirmation'} lable={'Confirm Password'} type={'password'} onChange={onChangeHandle} error={errors} value={passwordConfirmation} />
         <button onClick={clickSubmit} className="btn btn-primary">Create Account</button>
       </form>
-    </Layout>
+    </Layout >
   )
 }
 

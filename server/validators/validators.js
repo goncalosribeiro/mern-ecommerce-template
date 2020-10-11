@@ -17,7 +17,7 @@ exports.validate = (method) => {
           .custom(async (passwordConfirmation, { req }) => {
             const password = req.body.password;
             if (password !== passwordConfirmation) {
-              throw new Error('Passwords must be same')
+              throw Error('Passwords don\'t match')
             }
           })
       ]
