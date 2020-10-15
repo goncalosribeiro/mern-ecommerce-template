@@ -1,31 +1,12 @@
-import axios from 'axios'
 import React, { Fragment } from 'react'
 import { NavLink, withRouter, useHistory } from 'react-router-dom'
+import { isAuthenticated, signout } from '../auth'
 import './Menu.css'
+
 
 const Menu = () => {
   let history = useHistory()
 
-  const signout = (next) => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('jwt')
-      next()
-      return axios.get(`${process.env.REACT_APP_API_URL}/signout`)
-        .then(res => { console.log('signout', res); })
-        .catch(err => console.log(err))
-    }
-  }
-
-  const isAuthenticated = () => {
-    if (typeof window == 'undefined') {
-      return false
-    }
-    if (localStorage.getItem('jwt')) {
-      return JSON.parse(localStorage.getItem('jwt'))
-    } else {
-      return false
-    }
-  }
   return (
     <nav>
       <ul className="nav nav-tabs bg-primary">
@@ -42,6 +23,9 @@ const Menu = () => {
             </li>
           </Fragment>
         )}
+        <li className="nav-item">
+          <NavLink className='nav-link' to={'/user/dashboard'}>Dashboard</NavLink >
+        </li>
         {isAuthenticated() && (
           <li className="nav-item">
             <span className='nav-link' style={{ cursor: 'pointer', color: '#fffff' }} onClick={() => signout(() => { history.push('/') })}>Sign Out</span >
